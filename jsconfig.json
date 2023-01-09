@@ -1,0 +1,19 @@
+{
+  "typescript.suggest.autoImports": false,
+  "javascript.suggest.autoImports": false,
+    "typeAcquisition": {
+      "include": [
+        "three"
+      ]
+    },
+    "compilerOptions": {
+      "target": "ES6",
+      "module": "es6"
+    },
+    "exclude": [
+      "assets/js/build",
+      "assets/js/build-min",
+      "assets/js/vendor",
+      "node_modules"
+    ]
+  }
