@@ -22,9 +22,11 @@ var _control // Controle de la camera
 var _clock = new THREE.Clock() // Timer
 var _elapsedTime = 0 //  Durée écoulée entre la frame actuelle N et N-1
 var _hydrogene // Déclaration de la variable hydrogene
-var _hydrogene02 // Déclaration de la variable hydrogene
+var electronMesh2 // Déclaration de la variable hydrogene
+var electronMesh // Déclaration de la variable hydrogene
 
 var _focusEnabled = false // = true si le focus de l'atome est activé
+var _focusEnabled02 = false
 var _background
 
 var DatGUISettings = { // Parametres disponible dans le menu dat GUI
@@ -51,7 +53,7 @@ function InitScene() {
 
     // Initialisation et placement de la camera
     _camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000)
-    _camera.position.set(100, 2, 10)
+    _camera.position.set(100, 100, 80)
 
     // Création du controle camera
     _control = new OrbitControls(_camera, _renderer.domElement)
@@ -84,7 +86,10 @@ function InitScene() {
     // Création et positionnement de l'atome d'hygdrogene
     _hydrogene = new Hydrogene(5, 25, 5)
     _hydrogene.obj.position.x = 0
-
+        // console.log(_hydrogene);
+    console.log(_hydrogene);
+    console.log(electronMesh2);
+    console.log(electronMesh);
     const size = 100;
     const divisions = 10;
 
@@ -136,7 +141,8 @@ function Hydrogene(protonRadius, electronSpeed, speed) {
     const _terre = new THREE.TextureLoader().load('/assets/textures/earth-texture.jpg');
 
     const electronMat = new THREE.MeshLambertMaterial({ map: _terre })
-    const electronMesh = new THREE.Mesh(electronGeo, electronMat)
+    electronMesh = new THREE.Mesh(electronGeo, electronMat)
+    obj.add(electronMesh)
         // Ajout l'electron à l'orbite afin de le déplacer selon les mouvements de l'orbite 
     orbitMesh.add(electronMesh)
         // Placement de l'electron sur l'orbit
@@ -163,6 +169,7 @@ function Hydrogene(protonRadius, electronSpeed, speed) {
 
     const electronMat4 = new THREE.MeshLambertMaterial({ map: _lune })
     const electronMesh4 = new THREE.Mesh(electronGeo4, electronMat4)
+    obj.add(electronMesh4)
         // Ajout l'electron à l'orbite afin de le déplacer selon les mouvements de l'orbite 
     orbitMesh3.add(electronMesh4)
 
@@ -188,7 +195,8 @@ function Hydrogene(protonRadius, electronSpeed, speed) {
     const _mars = new THREE.TextureLoader().load('/assets/textures/mars-texture.jpg');
 
     const electronMat2 = new THREE.MeshLambertMaterial({ map: _mars })
-    const electronMesh2 = new THREE.Mesh(electronGeo2, electronMat2)
+    electronMesh2 = new THREE.Mesh(electronGeo2, electronMat2)
+    obj.add(electronMesh2)
         // Ajout l'electron à l'orbite afin de le déplacer selon les mouvements de l'orbite
     orbitMesh.add(electronMesh2)
         // Placement de l'electron sur l'orbit
@@ -214,6 +222,7 @@ function Hydrogene(protonRadius, electronSpeed, speed) {
 
     const electronMat3 = new THREE.MeshLambertMaterial({ map: _saturn })
     const electronMesh3 = new THREE.Mesh(electronGeo3, electronMat3)
+    obj.add(electronMesh3)
         // Ajout l'electron à l'orbite afin de le déplacer selon les mouvements de l'orbite 
     orbitMesh.add(electronMesh3)
         // Placement de l'electron sur l'orbit
@@ -224,6 +233,7 @@ function Hydrogene(protonRadius, electronSpeed, speed) {
     const geometry = new THREE.RingGeometry(8, 14, 32);
     const material = new THREE.MeshBasicMaterial({ map: _saturn_ring, side: THREE.DoubleSide });
     const mesh = new THREE.Mesh(geometry, material);
+    obj.add(mesh)
     _scene.add(mesh);
     electronMesh3.add(mesh)
 
@@ -259,10 +269,18 @@ function OnChangeProtonColor() {
 
 // Fonction appelée lors du clic sur le bouton Focus Atom. Permet à la camera de focus l'atome
 function OnClickFocusAtom() {
-    _focusEnabled = true
+    _focusEnabled = true;
+}
+
+function OnClickFocusAtom02() {
+    _focusEnabled02 = true;
 }
 // Bind la fonction OnClickFocusAtom à l'event click du bouton
-document.getElementById("button-atom").addEventListener("click", OnClickFocusAtom)
+document.getElementById("Soleil").addEventListener("click", OnClickFocusAtom)
+document.getElementById("Lune").addEventListener("click", OnClickFocusAtom)
+document.getElementById("Mars").addEventListener("click", OnClickFocusAtom)
+document.getElementById("Saturn").addEventListener("click", OnClickFocusAtom)
+document.getElementById("Terre").addEventListener("click", OnClickFocusAtom02)
 
 // Redimensionnement de la fenetre
 function Resize() {
@@ -270,6 +288,9 @@ function Resize() {
     _camera.updateProjectionMatrix();
     _renderer.setSize(window.innerWidth, window.innerHeight)
 }
+
+
+
 
 // Boucle d'animation
 function Animate() {
@@ -280,8 +301,8 @@ function Animate() {
     //  Definit l'axe souhaité pour la rotation (ici z)
     var zAxis = new THREE.Vector3(0, 0, 1)
 
-    // Applique la rotation sur l'axe z. Vitesse = deg/sec * elapsedTime * coef
-    // _hydrogene.orbit.rotateOnAxis(zAxis, THREE.MathUtils.degToRad(_hydrogene.electronSpeed * _elapsedTime * DatGUISettings.electronSpeedFactor))
+    // // Applique la rotation sur l'axe z. Vitesse = deg/sec * elapsedTime * coef
+    // electronMesh2.rotateOnAxis(zAxis, THREE.MathUtils.degToRad(electronMesh2.electronSpeed * _elapsedTime * DatGUISettings.electronSpeedFactor))
 
     // // Change la direction du deplacement selon la position en x
     // if (_hydrogene.obj.position.x > 10) {
@@ -292,17 +313,29 @@ function Animate() {
     // // Applique le deplacement sur l'axe X. Vitesse = unite/sec * elapsedTime * direction
     // _hydrogene.obj.translateX(_hydrogene.speed * _elapsedTime * _hydrogene.direction)
 
-    // // Si le focus de l'atome est activé
-    // if (_focusEnabled == true) {
-    //     // On définit une position pour le control camera
-    //     var offset = new THREE.Vector3(0, 0, 7)
-    //         // controlPosition = position de l'atome + décalage de 7 unité sur l'axe z
-    //     var controlPosition = _hydrogene.obj.position.clone().add(offset)
-    //         // Applique la nouvelle position
-    //     _control.object.position.copy(controlPosition)
-    //         //  focus le control sur la position de l'atome
-    //     _control.target = _hydrogene.obj.position
-    // }
+
+    // Si le focus de l'atome est activé
+    if (_focusEnabled == true) {
+        // On définit une position pour le control camera
+        // var offset = new THREE.Vector3(70, 15, 7)
+        // controlPosition = position de l'atome + décalage de 7 unité sur l'axe z
+        var controlPosition = electronMesh.position
+            // Applique la nouvelle position
+        _control.object.position.copy(controlPosition)
+            //  focus le control sur la position de l'atome
+        _control.target = electronMesh.position
+    }
+
+    if (_focusEnabled02 == true) {
+        // On définit une position pour le control camera
+        // var offset = new THREE.Vector3(5, 0, 7)
+        // controlPosition = position de l'atome + décalage de 7 unité sur l'axe z
+        var controlPosition = electronMesh2.position.clone()
+            // Applique la nouvelle position
+        _control.object.position.copy(controlPosition)
+            //  focus le control sur la position de l'atome
+        _control.target = electronMesh2.position
+    }
 
     // Mise à jour du control  ( /!\ necessaire car on utilise le damping)
     _control.update()
